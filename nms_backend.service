@@ -1,0 +1,14 @@
+[Unit]
+Description=nms_backendservice at port 4242
+Wants = network-online.target
+After = network.target network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=jawdat
+ExecStart=/home/jawdat/.pyenv/versions/2.7.14/envs/nms/bin/python /home/jawdat/nms/nms_backend/nms_backend_api.py
+
+[Install]
+WantedBy=multi-user.target

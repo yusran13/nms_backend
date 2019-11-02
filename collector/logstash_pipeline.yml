@@ -1,0 +1,38 @@
+input {
+  udp {
+    port => "514"
+    type => "syslog"
+  }
+
+  tcp {
+    port => "514"
+    type => "syslog"
+  }
+}
+
+filter {
+  if [type] == "syslog" {
+    grok {
+        patterns_dir => [ "/usr/share/logstash/vendor/bundle/jruby/2.3.0/gems/logstash-patterns-core-4.1.2/patterns" ]
+     match => [
+                "message", "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:syslog_message}",
+                "message", "%{SYSLOG5424PRI}(%{NUMBER:log_sequence#})?: [\*\.]*%{CISCOTIMESTAMPTZ:syslog_timestamp}: %%{CISCO_REASON:facility}-%{INT:severity_level}-%{CISCO_REASON:facility_mnemonic}: %{GREEDYDATA:syslog_message}"
+        ]
+    add_field => [ "received_at", "%{@timestamp}" ]
+     add_field => [ "received_from", "%{host}" ]
+    }
+    date {
+      match => [ "syslog_timestamp", "MMM  d HH:mm:ss", "MMM  d HH:mm:ss zzz", "MMM dd HH:mm:ss", "MMM dd HH:mm:ss zzz", "MMM dd yyyy HH:mm:ss zzz"]
+        timezone => "UTC"
+         }
+  }
+}
+
+output {
+        if [type] == "syslog"{
+                elasticsearch {
+                        index => "syslog-%{host}-%{+YYYY.MM.dd}"
+                        hosts => [ "localhost:9200" ]
+                }
+        }
+}

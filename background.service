@@ -1,0 +1,14 @@
+[Unit]
+Description=Background job service at port 4243
+After=network.target
+#StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+User=jawdat
+ExecStart=/home/jawdat/.pyenv/versions/2.7.14/envs/nms/bin/python /home/jawdat/nms/nms_backend/background.py >> /home/jawdat/nms/nms_backend/log/background_job.log 2>&1
+
+[Install]
+WantedBy=multi-user.target
