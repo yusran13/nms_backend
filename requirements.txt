@@ -45,7 +45,7 @@ pymongo==3.6.1
 pysmi==0.2.2
 pysnmp==4.4.4
 pytz==2018.3
-PyYAML==3.13
+PyYAML==5.4
 scp==0.11.0
 six==1.11.0
 speaklater==1.3
